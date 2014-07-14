@@ -1,0 +1,39 @@
+
+# /Users/cknudsen/.rbenv/versions/1.9.3-p545/bin/foreman start
+
+[common]
+setup_scripts = [
+    "echo 'download tomcat'"
+]
+
+# Special version numbers that can be used are "latest.snapshot" and "latest.release"
+
+[applications]
+
+  [applications.member]
+  steps = [
+    "sleep 2"
+  ]
+  command = "java -jar downloads/member-service/app.jar server downloads/member-service/config.yml"
+  enabled = true
+
+  [applications.employer]
+  steps = [
+    "sleep 1"
+  ]
+  command = "java -jar downloads/employer-graph-service/app.jar server downloads/employer-graph-service/config.yml"
+  enabled = true
+
+  [applications.recommandation]
+  steps = [
+    "echo 'recommandation'"
+  ]
+  command = "java -jar downloads/recommandation-service/app.jar server downloads/recommandation-service/config.yml"
+  enabled = true
+
+  [applications.event_audit]
+  steps = [
+    "echo 'event audit'"
+  ]
+  command = "java -jar downloads/event-audit-service/app.jar server downloads/event-audit-service/config.yml"
+  enabled = true
