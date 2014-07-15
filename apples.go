@@ -10,8 +10,7 @@ import (
 	"strings"
 )
 
-// TODO turn this into a command line flag
-const numWorkers int = 5
+const defaultWorkerCount int = 5
 
 type applicationConfig struct {
 	Common       common
@@ -20,12 +19,13 @@ type applicationConfig struct {
 
 type common struct {
 	SetupScripts []string `toml:"setup_scripts"`
+	Workers      int
 }
 
 type application struct {
 	Steps   []string
 	Command string
-	Enabled bool
+	Enabled *bool
 }
 
 type outputLine struct {
@@ -151,10 +151,10 @@ func writeLines(lines chan outputLine) {
 	}
 }
 
-func runEnabledTasks(apps map[string]application, lineChan chan outputLine, returnChan chan bool) bool {
+func runEnabledTasks(apps map[string]application, lineChan chan outputLine, returnChan chan bool, numWorkers int) bool {
 	commands := make([]commandSet, 0, len(apps))
 	for k, v := range apps {
-		if v.Enabled {
+		if v.Enabled == nil || *v.Enabled {
 			commands = append(commands, commandSet{
 				Steps:      v.Steps,
 				Prefix:     k,
@@ -184,7 +184,7 @@ func writeProcFile(apps map[string]application) {
 	}
 	defer f.Close()
 	for k, v := range apps {
-		if v.Enabled {
+		if v.Enabled == nil || *v.Enabled {
 			f.WriteString(fmt.Sprintf("%s: %s\n", k, v.Command))
 		}
 	}
@@ -220,7 +220,12 @@ func main() {
 	}
 
 	// Run application commands in parallel
-	allPass := runEnabledTasks(config.Applications, lineChan, returnChan)
+	workerCount := config.Common.Workers
+	if workerCount == 0 {
+		workerCount = defaultWorkerCount
+	}
+	fmt.Println(workerCount)
+	allPass := runEnabledTasks(config.Applications, lineChan, returnChan, workerCount)
 	if !allPass {
 		fmt.Printf("Bailing on writing Procfile. Error in application scripts.")
 		os.Exit(2)
