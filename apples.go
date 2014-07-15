@@ -84,11 +84,8 @@ func (cs *commandSet) readPipeOutput(pipe io.ReadCloser) {
 
 func (cs *commandSet) RunCommand() {
 	for _, script := range cs.Steps {
-		// To handle more complex commands maybec onsider switching to:
-		// exec.Command("sh","-c", script)
 		cs.writeLine(fmt.Sprintf("Running command `%s`", script))
-		c := strings.Split(script, " ")
-		cmd := exec.Command(c[0], c[1:]...)
+		cmd := exec.Command("/bin/bash", "-c", script)
 		err := cs.executeTask(cmd)
 		if err != nil {
 			cs.ReturnCode <- false
