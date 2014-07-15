@@ -1,14 +1,20 @@
 
-# /Users/cknudsen/.rbenv/versions/1.9.3-p545/bin/foreman start
-
 [common]
+# The list of setup scripts that will run before the application commands.
 setup_scripts = [
     "echo 'download tomcat'"
 ]
 
-# Special version numbers that can be used are "latest.snapshot" and "latest.release"
+# The number of workers used to run the application commands in parallel.
+# Default is 5.
+workers = 5
 
 [applications]
+
+  # Each application should have steps and a command.  The steps are the commands to execute when the
+  # program is called. The steps will be run serially, however each application will be setup in parallel.
+  # The command block is the command that will be written into the Procfile when everything has been run.
+  # To ignore a configured application you can comment it out or set enabled to false.
 
   [applications.member]
   steps = [
