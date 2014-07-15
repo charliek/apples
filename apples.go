@@ -55,8 +55,8 @@ func (cs *commandSet) executeTask(cmd *exec.Cmd) error {
 		return err
 	}
 	cmd.Start()
-	cs.readPipeOutput(outPipe)
-	cs.readPipeOutput(errPipe)
+	go cs.readPipeOutput(outPipe)
+	go cs.readPipeOutput(errPipe)
 
 	err = cmd.Wait()
 	if err != nil {
