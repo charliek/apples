@@ -211,7 +211,7 @@ func main() {
 		Output:     lineChan,
 		ReturnCode: returnChan,
 	}
-	// TODO write synchronous version of this command
+	// TODO write synchronous version of this command and move returnChan to runEnabledTasks function.
 	go setupCmd.RunCommand()
 	setupSuccessful := <-setupCmd.ReturnCode
 	if !setupSuccessful {
@@ -224,7 +224,6 @@ func main() {
 	if workerCount == 0 {
 		workerCount = defaultWorkerCount
 	}
-	fmt.Println(workerCount)
 	allPass := runEnabledTasks(config.Applications, lineChan, returnChan, workerCount)
 	if !allPass {
 		fmt.Printf("Bailing on writing Procfile. Error in application scripts.")
