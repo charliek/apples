@@ -115,9 +115,42 @@ func RunCommandsInWorkerPool(commands []commandSet, numWorkers int) {
 	}
 }
 
+var allColors []string = []string{
+	"31", // red
+	"32", // green
+	"33", // yellow
+	"34", // blue
+	"35", // magenta
+	"36", // cyan
+	"37", // light_gray
+	"90", // dark_gray
+	"91", // light_red
+	"92", // light_green
+	"93", // light_yellow
+	"94", // light_blue
+	"95", // light_magenta
+	"96", // light_cyan
+}
+
 func writeLines(lines chan outputLine) {
+	maxLen := 0
+	colorIndex := 0
+	formatter := ""
+	colors := map[string]string{}
+
 	for line := range lines {
-		fmt.Printf("%s: %s\n", line.Prefix, line.Line)
+		color, ok := colors[line.Prefix]
+		if !ok {
+			if len(line.Prefix) > maxLen {
+				maxLen = len(line.Prefix)
+				formatter = fmt.Sprintf("%%-%ds |\033[0m %%s\n", maxLen)
+			}
+			color = allColors[colorIndex%len(allColors)]
+			colors[line.Prefix] = color
+			colorIndex++
+		}
+		fmt.Printf("\033[%sm", color)
+		fmt.Printf(formatter, line.Prefix, line.Line)
 	}
 }
 
