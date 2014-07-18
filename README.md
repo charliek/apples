@@ -12,7 +12,9 @@ environment for local development.
 
 ## Installation
 
-Soon a release artifact will be uploaded, but until then a standard `go get` should build the binary:
+For a mac install you can download a [version from the github release page](https://github.com/charliek/apples/releases).
+
+For a source install you should be able to just do:
 
 ```
 $ go get github.com/charliek/apples
